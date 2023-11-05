@@ -1,9 +1,9 @@
 import Handsontable from 'handsontable/base';
 import { registerAllModules } from 'handsontable/registry';
 import {
-  registerCellType,
-  DateCellType,
-  HandsontableCellType,
+  registerCellType, // cell types' registering function
+  DateCellType, // date
+  HandsontableCellType, // handsontable
   NumericCellType,
   TextCellType,
 } from 'handsontable/cellTypes';
