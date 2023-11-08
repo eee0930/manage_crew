@@ -5,3 +5,5 @@ export const DEFAULT_DATA = [
   ['Amber', '1988-06-14', '알고리즘', 3],
   ['Lisa', '1994-07-03', '돼지파티', 13],
 ];
+
+export const READONLY_STATE = [true, true, true, false];
