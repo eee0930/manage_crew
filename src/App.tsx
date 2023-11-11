@@ -1,14 +1,13 @@
-import Handsontable from 'handsontable/base';
-import { registerAllModules } from 'handsontable/registry';
 import { HotTable } from '@handsontable/react';
+import { registerAllModules } from 'handsontable/registry';
 import { Settings } from 'handsontable/plugins/contextMenu';
 import './App.css';
 import 'handsontable/dist/handsontable.full.min.css';
 import Button from './components/Button';
 import { DEFAULT_DATA, READONLY_STATE } from './default_data';
-import { useEffect, useRef, useState } from 'react';
+import { useHotHooks } from './hooks/useHotHooks';
 
-registerAllModules();
+registerAllModules(); // use handsontable's all modules
 
 const HOTTABLE_PROPS = {
   height: 'auto',
@@ -27,43 +26,47 @@ const CONTEXT_MENU: Settings = [
   'remove_row',
 ];
 
+type TDate<T> = { [key: number]: T };
+interface IData {
+  head: {
+    added: TDate<string | undefined>;
+    deleted: TDate<undefined>;
+    updated: TDate<string | undefined>;
+  };
+  body: {
+    added: TDate<(string | number)[]>;
+    deleted: TDate<undefined>;
+    updated: TDate<TDate<string | number>>;
+  };
+}
+
 function App() {
-  const [datas, setDatas] = useState(DEFAULT_DATA);
-  const [updatedData, setUpdatedData] = useState(DEFAULT_DATA);
-  const [readOnlyCols, setReadOnlyCols] = useState(READONLY_STATE);
-  const [notReadOnlyRows, setNotReadOnlyRows] = useState<number[]>([]);
-  const [deletedColIdx, setDeletedColIdx] = useState<number[]>([]);
-  const [deletedRowIdx, setDeletedRowIdx] = useState<number[]>([]);
-  const hotRef = useRef<HotTable>(null);
-  const handleClickSave = () => {};
-  useEffect(() => {
+  const { hotRef, compare, setData } = useHotHooks(
+    DEFAULT_DATA,
+    READONLY_STATE
+  );
+
+  const handleClickSave = () => {
     const hot = hotRef?.current?.hotInstance;
+    const printData: IData = {
+      head: { added: {}, deleted: {}, updated: {} },
+      body: { added: {}, deleted: {}, updated: {} },
+    };
     if (hot) {
-      hot.updateSettings({
-        cells(row: number, col: number) {
-          const cellProperties: Handsontable.CellMeta = {};
-          if (!notReadOnlyRows.includes(row)) {
-            if (readOnlyCols[col]) {
-              cellProperties.editor = false;
-              cellProperties.allowRemoveColumn = false;
-            }
-          }
-          if (row === 0) {
-            cellProperties.allowRemoveColumn = false;
-          }
-          return cellProperties;
-        },
-      });
+      const hotData = hot.getData();
+
+      setData(hotData);
+      console.log(printData);
     }
-  }, [readOnlyCols, notReadOnlyRows]);
-  const updateSetting = () => {};
+  };
+
   return (
     <div className="App">
       <Button callback={handleClickSave}>저장</Button>
 
       <HotTable
         ref={hotRef}
-        data={datas}
+        data={DEFAULT_DATA}
         contextMenu={CONTEXT_MENU}
         {...HOTTABLE_PROPS}
       />

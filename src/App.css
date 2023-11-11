@@ -22,3 +22,6 @@ button {
   outline: none;
   cursor: pointer;
 }
+table.htCore tr.head td {
+  background-color: #eaeaea;
+}
