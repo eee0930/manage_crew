@@ -27,21 +27,23 @@ const CONTEXT_MENU: Settings = [
 ];
 
 type TDate<T> = { [key: number]: T };
+interface IHead {
+  added: TDate<string | undefined>;
+  deleted: TDate<undefined>;
+  updated: TDate<string | undefined>;
+}
+interface IBody {
+  added: TDate<(string | number)[]>;
+  deleted: TDate<undefined>;
+  updated: TDate<TDate<string | number>>;
+}
 interface IData {
-  head: {
-    added: TDate<string | undefined>;
-    deleted: TDate<undefined>;
-    updated: TDate<string | undefined>;
-  };
-  body: {
-    added: TDate<(string | number)[]>;
-    deleted: TDate<undefined>;
-    updated: TDate<TDate<string | number>>;
-  };
+  head: IHead;
+  body: IBody;
 }
 
 function App() {
-  const { hotRef, compare, setData } = useHotHooks(
+  const { hotRef, compare, setInitData } = useHotHooks(
     DEFAULT_DATA,
     READONLY_STATE
   );
@@ -53,12 +55,28 @@ function App() {
       body: { added: {}, deleted: {}, updated: {} },
     };
     if (hot) {
-      const hotData = hot.getData();
+      const nowData = hot.getData();
+      const compareData = [...compare];
+      const headData = setHeadData(nowData, compareData);
+      const bodyData = setBodyData(nowData, compareData);
+      const newPrintData = {
+        ...printData,
+        head: headData,
+        cody: bodyData,
+      };
 
-      setData(hotData);
-      console.log(printData);
+      setInitData(nowData);
+      console.log(newPrintData);
     }
   };
+
+  const setHeadData = (data: any[], compare: any[]) => {
+    const head = {};
+    const len1 = data.length;
+    const len2 = data[0].length;
+  };
+
+  const setBodyData = (data: any[], compare: any[]) => {};
 
   return (
     <div className="App">

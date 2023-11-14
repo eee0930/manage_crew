@@ -11,15 +11,15 @@ export const useHotHooks = (
   readOnlys: boolean[]
 ) => {
   const hotRef = useRef<HotTable>(null);
-  const [data, setData] = useState(initialData);
+  const [initData, setInitData] = useState(initialData);
   const [compare, setCompare] = useState(initialData);
   const [readOnlyCols, setReadOnlyCols] = useState(readOnlys);
   const [nowAddedRowsIdx, setNowAddedRowsIdx] = useState<number[]>([]);
 
   useEffect(() => {
     setNowAddedRowsIdx([]);
-    setCompare(data);
-  }, [data]);
+    setCompare(initData);
+  }, [initData]);
 
   useEffect(() => {
     const hot = hotRef?.current?.hotInstance;
@@ -90,12 +90,22 @@ export const useHotHooks = (
     if (readOnlyCols[col]) {
       return false;
     }
+    setCompare((prev) =>
+      [...prev].map((com) => [...com.slice(0, col), ...com.slice(col + 1)])
+    );
   };
   const handleBeforeRemoveRow: HandleRows = (row) => {
     if (row === 0) {
       return false;
     }
+    if (nowAddedRowsIdx.includes(row)) {
+      setNowAddedRowsIdx((prev) => {
+        const idx = prev.indexOf(row);
+        return [...prev.slice(0, idx), ...prev.slice(idx + 1)];
+      });
+    }
+    setCompare((prev) => [...prev.slice(0, row), ...prev.slice(row + 1)]);
   };
 
-  return { hotRef, compare, setData };
+  return { hotRef, compare, setInitData };
 };
