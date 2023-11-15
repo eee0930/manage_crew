@@ -26,6 +26,7 @@ const CONTEXT_MENU: Settings = [
   'remove_row',
 ];
 
+type Data = (string | number | undefined)[][];
 type TDate<T> = { [key: number]: T };
 interface IHead {
   added: TDate<string | undefined>;
@@ -70,13 +71,22 @@ function App() {
     }
   };
 
-  const setHeadData = (data: any[], compare: any[]) => {
-    const head = {};
-    const len1 = data.length;
-    const len2 = data[0].length;
+  const setHeadData = (data: Data, compare: Data) => {
+    const head: IHead = {
+      added: {},
+      deleted: {},
+      updated: {},
+    };
+    const len = data[0].length;
+    for (let i = 0; i < len; i++) {
+      const compareData = compare[0][i];
+      if (compareData === '') {
+        head.added[i] = data[0][i] as string;
+      }
+    }
   };
 
-  const setBodyData = (data: any[], compare: any[]) => {};
+  const setBodyData = (data: Data, compare: Data) => {};
 
   return (
     <div className="App">
