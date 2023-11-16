@@ -63,7 +63,7 @@ function App() {
       const newPrintData = {
         ...printData,
         head: headData,
-        cody: bodyData,
+        body: bodyData,
       };
 
       setInitData(nowData);
