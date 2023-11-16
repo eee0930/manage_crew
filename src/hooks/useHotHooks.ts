@@ -48,16 +48,17 @@ export const useHotHooks = (
     });
   };
 
-  useEffect(() => {
-    const hot = hotRef?.current?.hotInstance;
-    if (hot) {
-      hot.addHook('beforeRenderer', handleBeforeRenderer);
-      hot.addHook('afterCreateCol', handleAfterCreateCol);
-      hot.addHook('afterCreateRow', handleAfterCreateRow);
-      hot.addHook('beforeRemoveCol', handleBeforeRemoveCol);
-      hot.addHook('beforeRemoveRow', handleBeforeRemoveRow);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const hot = hotRef?.current?.hotInstance;
+  //   if (hot) {
+  //     hot.addHook('beforeRenderer', handleBeforeRenderer);
+  //     hot.addHook('afterCreateCol', handleAfterCreateCol);
+  //     hot.addHook('afterCreateRow', handleAfterCreateRow);
+  //     hot.addHook('beforeRemoveCol', handleBeforeRemoveCol);
+  //     hot.addHook('beforeRemoveRow', handleBeforeRemoveRow);
+  //   }
+  // }, []);
+  // issue: closer가 함수안의 state값을 저장하므로 바뀐 state가 적용되지 않는다.
 
   const handleBeforeRenderer: HandleBeforeRenderer = (TD, row) => {
     const parentElement = TD.parentElement;
@@ -65,7 +66,7 @@ export const useHotHooks = (
       return;
     }
     if (row === 0) {
-      Handsontable.dom.addClass(parentElement, 'head');
+      parentElement.classList.add('head');
     }
   };
   const handleAfterCreateCol: HandleCols = (col) => {
@@ -87,17 +88,20 @@ export const useHotHooks = (
     });
   };
   const handleBeforeRemoveCol: HandleCols = (col) => {
+    console.log(readOnlyCols);
     if (readOnlyCols[col]) {
       return false;
     }
     setCompare((prev) =>
       [...prev].map((com) => [...com.slice(0, col), ...com.slice(col + 1)])
     );
+    setReadOnlyCols((prev) => [...prev.slice(0, col), ...prev.slice(col + 1)]);
   };
   const handleBeforeRemoveRow: HandleRows = (row) => {
     if (row === 0) {
       return false;
     }
+    console.log(nowAddedRowsIdx);
     if (nowAddedRowsIdx.includes(row)) {
       setNowAddedRowsIdx((prev) => {
         const idx = prev.indexOf(row);
@@ -107,5 +111,16 @@ export const useHotHooks = (
     setCompare((prev) => [...prev.slice(0, row), ...prev.slice(row + 1)]);
   };
 
-  return { hotRef, compare, setInitData };
+  return {
+    hotRef,
+    compare,
+    setInitData,
+    hooks: {
+      beforeRenderer: handleBeforeRenderer,
+      afterCreateCol: handleAfterCreateCol,
+      afterCreateRow: handleAfterCreateRow,
+      beforeRemoveCol: handleBeforeRemoveCol,
+      beforeRemoveRow: handleBeforeRemoveRow,
+    },
+  };
 };

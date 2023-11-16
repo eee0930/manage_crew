@@ -44,7 +44,7 @@ interface IData {
 }
 
 function App() {
-  const { hotRef, compare, setInitData } = useHotHooks(
+  const { hotRef, compare, setInitData, hooks } = useHotHooks(
     DEFAULT_DATA,
     READONLY_STATE
   );
@@ -84,6 +84,7 @@ function App() {
         head.added[i] = data[0][i] as string;
       }
     }
+    return head;
   };
 
   const setBodyData = (data: Data, compare: Data) => {};
@@ -97,6 +98,7 @@ function App() {
         data={DEFAULT_DATA}
         contextMenu={CONTEXT_MENU}
         {...HOTTABLE_PROPS}
+        {...hooks}
       />
     </div>
   );
