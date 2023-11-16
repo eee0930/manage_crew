@@ -88,7 +88,6 @@ export const useHotHooks = (
     });
   };
   const handleBeforeRemoveCol: HandleCols = (col) => {
-    console.log(readOnlyCols);
     if (readOnlyCols[col]) {
       return false;
     }
@@ -101,7 +100,6 @@ export const useHotHooks = (
     if (row === 0) {
       return false;
     }
-    console.log(nowAddedRowsIdx);
     if (nowAddedRowsIdx.includes(row)) {
       setNowAddedRowsIdx((prev) => {
         const idx = prev.indexOf(row);
